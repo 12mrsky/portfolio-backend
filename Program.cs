@@ -19,7 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS
+// ✅ CORS (GLOBAL)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -40,19 +40,22 @@ var app = builder.Build();
 // 🔹 MIDDLEWARE PIPELINE
 // =============================
 
-// Swagger
-app.UseSwagger();
-app.UseSwaggerUI();
+// ✅ CORS FIRST (IMPORTANT)
+app.UseCors("AllowAll");
 
-// HTTPS
+// Swagger (optional production)
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// HTTPS (Render pe optional)
 app.UseHttpsRedirection();
 
-// ✅ SERVE ANGULAR FILES (VERY IMPORTANT 🔥)
-app.UseDefaultFiles();   // loads index.html
-app.UseStaticFiles();   // serves wwwroot
-
-// CORS
-app.UseCors("AllowAll");
+// Static files (Angular build)
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 // Authorization
 app.UseAuthorization();
@@ -60,7 +63,7 @@ app.UseAuthorization();
 // Controllers (API)
 app.MapControllers();
 
-// ✅ SPA FALLBACK (VERY IMPORTANT 🔥)
+// SPA fallback (Angular routing)
 app.MapFallbackToFile("index.html");
 
 
