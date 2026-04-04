@@ -29,43 +29,37 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
-
 // =============================
 // 🔹 BUILD APP
 // =============================
 var app = builder.Build();
 
-
 // =============================
 // 🔹 MIDDLEWARE PIPELINE
 // =============================
 
-// ✅ CORS FIRST (IMPORTANT)
+// ✅ CORS FIRST
 app.UseCors("AllowAll");
 
-// Swagger (optional production)
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+// Swagger (ENABLE ALWAYS for debugging)
+app.UseSwagger();
+app.UseSwaggerUI();
 
-// HTTPS (Render pe optional)
+// HTTPS
 app.UseHttpsRedirection();
 
-// Static files (Angular build)
+// ✅ IMPORTANT: MAP API FIRST
+app.MapControllers();
+
+// ✅ THEN serve Angular files
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
 // Authorization
 app.UseAuthorization();
 
-// Controllers (API)
-app.MapControllers();
-
-// SPA fallback (Angular routing)
+// ✅ Angular fallback LAST (VERY IMPORTANT)
 app.MapFallbackToFile("index.html");
-
 
 // =============================
 // 🔹 RUN APP
